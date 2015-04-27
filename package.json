@@ -1,6 +1,6 @@
 {
   "name": "assembler",
-  "version": "0.0.1",
+  "version": "0.0.2-beta1",
   "author": "James Allen",
   "dependencies": {
     "connect-history-api-fallback": "0.0.5",
