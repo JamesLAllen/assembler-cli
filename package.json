@@ -1,6 +1,6 @@
 {
   "name": "assembler-cli",
-  "version": "0.0.2-beta2",
+  "version": "0.0.2-beta3",
   "author": "James Allen",
   "dependencies": {
     "connect-history-api-fallback": "0.0.5",
