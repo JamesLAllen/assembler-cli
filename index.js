@@ -2,11 +2,7 @@
 
 
 // process.argv.push('--silent');
-var gulp 					= require('gulp');
-var merge 					= require('merge');
-var runSequence 			= require('run-sequence');
-var gutil					= require('gulp-util');
-var requireDir 				= require('directory');
+
 
 
 function exists(item){
@@ -17,7 +13,14 @@ function exists(item){
 }
 
 
-function Assembler(options){
+function Assembler(gulp, options){
+	var gulp 					= gulp;
+
+	var merge 					= require('merge');
+	var runSequence 			= require('run-sequence');
+	var gutil					= require('gulp-util');
+	var requireDir 				= require('directory');
+
 	var _taskPrefix			= 'ab-';
 	var DEFAULT_TASK		= _taskPrefix + 'default-task';
 	var QUEUE_TASK			= _taskPrefix + 'queue-task';
@@ -298,6 +301,9 @@ function Assembler(options){
 	}
 
 	var _self = {
+		get gulp{
+			return gulp;
+		},
 		get config(){
 			return _config;
 		},
