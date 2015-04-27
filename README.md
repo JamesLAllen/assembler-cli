@@ -1,2 +1,2 @@
-# assembler-cli
-CLI tool for Assembler build environment.
+# assembler
+Framework-agnostic build environment.
