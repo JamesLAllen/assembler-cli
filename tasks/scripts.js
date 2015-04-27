@@ -1,18 +1,21 @@
-var gulp               	= require('gulp');
+
 // var fs                 	= require('fs');
-var jshint				= require('gulp-jshint');
-var stylish				= require('jshint-stylish-ex');
-var lazypipe 			= require('lazypipe');
-var del 				= require('del');
-var plugins            	= require('gulp-load-plugins')();
-var gutil 				= plugins.util;
 // var es                 	= require('event-stream');
 // var historyApiFallback 	= require('connect-history-api-fallback');
-var runSequence 		= require('run-sequence').use(gulp);
-var glob 				= require('glob-utils');
-var rjs 	 			= require('requirejs');
 
 var AssemblerScripts = function(assembler){
+
+	var gulp = assembler.gulp;
+
+	var jshint				= require('gulp-jshint');
+	var stylish				= require('jshint-stylish-ex');
+	var lazypipe 			= require('lazypipe');
+	var del 				= require('del');
+	var plugins            	= require('gulp-load-plugins')();
+	var gutil 				= plugins.util;
+	var runSequence 		= require('run-sequence').use(gulp);
+	var glob 				= require('glob-utils');
+	var rjs 	 			= require('requirejs');
 
 	var _config = assembler.config;
 	var _paths = assembler.config.paths;

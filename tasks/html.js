@@ -1,13 +1,15 @@
-var gulp               	= require('gulp');
-var del 				= require('del');
-var plugins            	= require('gulp-load-plugins')();
-var gutil 				= plugins.util;
-var runSequence 		= require('run-sequence').use(gulp);
-var sass				= require('gulp-sass');
-var cssBeautify			= require('gulp-cssbeautify');
-var autoprefix 			= require('gulp-autoprefixer');
 
 var AssemblerHtml = function(assembler){
+
+	var gulp = assembler.gulp;
+
+	var del 				= require('del');
+	var plugins            	= require('gulp-load-plugins')();
+	var gutil 				= plugins.util;
+	var runSequence 		= require('run-sequence').use(gulp);
+	var sass				= require('gulp-sass');
+	var cssBeautify			= require('gulp-cssbeautify');
+	var autoprefix 			= require('gulp-autoprefixer');
 
 	var _config = assembler.config;
 	var _paths = assembler.config.paths;

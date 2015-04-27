@@ -1,12 +1,15 @@
-var gulp               	= require('gulp');
-var del 				= require('del');
-var plugins            	= require('gulp-load-plugins')();
-var merge 				= require('merge');
-var gutil 				= plugins.util;
-var runSequence 		= require('run-sequence').use(gulp);
-var server 				= require('gulp-server-livereload');
+// var gulp               	= require('gulp');
 
 var AssemblerServer = function(assembler){
+
+	var gulp = assembler.gulp;
+
+	var del 				= require('del');
+	var plugins            	= require('gulp-load-plugins')();
+	var merge 				= require('merge');
+	var gutil 				= plugins.util;
+	var runSequence 		= require('run-sequence').use(gulp);
+	var server 				= require('gulp-server-livereload');
 
 	var _config = assembler.config;
 	var _paths = assembler.config.paths;
