@@ -301,7 +301,7 @@ function Assembler(gulp, options){
 	}
 
 	var _self = {
-		get gulp{
+		get gulp(){
 			return gulp;
 		},
 		get config(){
