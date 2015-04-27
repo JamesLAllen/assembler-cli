@@ -56,5 +56,8 @@
   "bugs": {
     "url": "https://github.com/Mode7James/assembler-cli/issues"
   },
-  "homepage": "https://github.com/Mode7James/assembler-cli"
+  "homepage": "https://github.com/Mode7James/assembler-cli",
+  "devDependencies": {
+    "gulp-bower": "0.0.10"
+  }
 }

@@ -1,9 +1,14 @@
 /* jshint node: true */
 
-
-// process.argv.push('--silent');
-
-
+// TODO: add support for passing objects with async & queue
+// TODO: Pull in public and vendor directories
+// TODO: Add minimal templating support for config variables in source, for example {{bower}}
+// TODO: Add library import support
+// TODO: Add Notify
+// TODO: Add logging service
+// TODO: Add Verbose vs Normal logging
+// TODO: Create CLI, run Gulp in --silent mode
+// TODO: Create blueprints and generators
 
 function exists(item){
 	if (typeof item !== 'undefined'){
@@ -14,22 +19,20 @@ function exists(item){
 
 
 function Assembler(gulp, options){
-	var gulp 					= gulp;
-
 	var merge 					= require('merge');
-	var runSequence 			= require('run-sequence');
+	var runSequence 			= require('run-sequence').use(gulp);
 	var gutil					= require('gulp-util');
 	var requireDir 				= require('directory');
 
-	var _taskPrefix			= 'ab-';
-	var DEFAULT_TASK		= _taskPrefix + 'default-task';
-	var QUEUE_TASK			= _taskPrefix + 'queue-task';
+	var _taskPrefix				= 'ab-';
+	var DEFAULT_TASK			= _taskPrefix + 'default-task';
+	var QUEUE_TASK				= _taskPrefix + 'queue-task';
 
-	var _args 				= null;
-	var _config 			= null;
-	var _error 				= null;
-	var _tasks				= {};
-	var _taskQueue			= [];
+	var _args 					= null;
+	var _config 				= null;
+	var _error 					= null;
+	var _tasks					= {};
+	var _taskQueue				= [];
 
 	
 
@@ -60,8 +63,10 @@ function Assembler(gulp, options){
 	}
 
 	function _register(taskName){
+		if (_config.verbose){
+			console.log('Register:', taskName);
+		}
 		_tasks[taskName] = require(__dirname + '/tasks/' + taskName)(_self);
-		// _tasks[taskName].name = taskName;
 	}
 
 	function _use(library){
@@ -263,7 +268,6 @@ function Assembler(gulp, options){
 		
 		// define the rest
 		config = merge.recursive(true, envDefaults, options);
-		console.log(config);
 		return config;
 	}
 
