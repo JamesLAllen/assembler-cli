@@ -9,7 +9,7 @@ var defaults = {
 	server: {
 		host: 'localhost',
 		port: '4200',
-		open:true,
+		open:false,
 		https: false,
 		log: 'info',
 		clientConsole: false,
@@ -27,6 +27,7 @@ var defaults = {
 		scripts: 'scripts',
 		styles: 'styles',
 		assets: 'assets',
+		public: 'public',
 		bower: 'bower_components',
 		vendor: 'vendor',
 		include: []
@@ -34,11 +35,6 @@ var defaults = {
 	scripts : {
 		keepBuildDir: true,
 		waitSeconds: 0,
-		wrapShim: true,
-		removeCombined: true,
-		skipDirOptimize: true,
-		skipModuleInsertion: true,
-		optimize: 'none',
 		paths: {},
 		shim: {},
 		primaryModule: 'app'
@@ -48,7 +44,11 @@ var defaults = {
 	},
 	images : {
 
-	}
+	},
+	vendorFiles: {
+		
+	},
+	imports: []
 };
 
 var config = {

@@ -58,6 +58,10 @@
   },
   "homepage": "https://github.com/Mode7James/assembler-cli",
   "devDependencies": {
-    "gulp-bower": "0.0.10"
+    "gulp-bower": "0.0.10",
+    "gulp-concat": "^2.5.2",
+    "gulp-insert": "^0.4.0",
+    "gulp-replace": "^0.5.3",
+    "loader.js": "^3.2.0"
   }
 }

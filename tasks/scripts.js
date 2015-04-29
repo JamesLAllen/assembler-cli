@@ -13,18 +13,25 @@ var AssemblerScripts = function(assembler){
 	var del 				= require('del');
 	var plugins            	= require('gulp-load-plugins')();
 	var gutil 				= plugins.util;
+	var merge 				= require('merge');
 	var runSequence 		= require('run-sequence').use(gulp);
+	var replace				= require('gulp-replace');
 	var glob 				= require('glob-utils');
 	var rjs 	 			= require('requirejs');
+	var concat 				= require('gulp-concat');
+	var insert 				= require('gulp-insert');
+	// var loaderJS			= require.resolve('loader.js');
+	var fs 					= require('fs');
 
-	var _config = assembler.config;
-	var _paths = assembler.config.paths;
-	var _taskPrefix = _taskPrefix || assembler.prefix;
-	var _name = 'scripts';
+	var _config 			= assembler.config;
+	var _paths 				= assembler.config.paths;
+	var _taskPrefix 		= _taskPrefix || assembler.prefix;
+	var _name 				= 'scripts';
 	var _src;
-	var _fileGlob = '*.js';
-	var _error = false;
-	var _lintingFailed = false;
+	var _fileGlob 			= '*.js';
+	var _error 				= false;
+	var _lintingFailed 		= false;
+	var _loaderFile 		= require.resolve('loader.js');
 
 
 	function _construct(assembler){
@@ -55,6 +62,10 @@ var AssemblerScripts = function(assembler){
 			callback();
 		}
 	};
+
+	function _generateVendorJS(){
+
+	}
 
 	function _defineTasks(){
 		gulp.task(_self.fullName + ':lint', function(callback){
@@ -127,7 +138,20 @@ var AssemblerScripts = function(assembler){
 				callback();
 				return;
 			}
-			return gulp.src(_src, {read:false})
+			console.log('copyto-temp');
+			var copySrc = _src
+			copySrc.push(_loaderFile);
+
+			console.log(copySrc);
+			return gulp.src(copySrc, {read:false})
+				.pipe(gulp.dest(_tempPass1 + '/' + _name));
+		});
+
+		gulp.task(_self.fullName + ':vendor', [], function(callback){
+			// require('fs').writeFile(_tempPass1 + '/' + _name + '/vendor.js', '', callback);
+			// console.log(_config.imports);
+			return gulp.src(_config.imports)
+				.pipe(concat('vendor.js'))
 				.pipe(gulp.dest(_tempPass1 + '/' + _name));
 		});
 
@@ -166,18 +190,20 @@ var AssemblerScripts = function(assembler){
 			_resetErrors();
 			return gulp.src(_paths.dist + '/' + _paths.assets + '/' + _fileGlob)
 			.pipe(plugins.if((_config.environment === 'production' && _config.minify), plugins.stripDebug()))
+			// .pipe(insert.prepend(require('./node_modules/loader.js/loader.js')))
+
+			.pipe(insert.prepend(fs.readFileSync(_loaderFile)))
+
 			.pipe(plugins.if(_config.minify, plugins.uglify({
-				// preserveComments: (_config.environment === 'production') ? 'some' : 'all',
-				preserveComments: 'some'
-			}),
-			plugins.beautify({
-				preserveNewlines: true,
-				keepArrayIndentation: true
-			})))
+					// preserveComments: (_config.environment === 'production') ? 'some' : 'all',
+					preserveComments: 'some'
+				}),
+				plugins.beautify({
+					preserveNewlines: true,
+					keepArrayIndentation: true
+				})))
 			.pipe(gulp.dest(_paths.dist + '/' + _paths.assets));
 		});
-
-		
 
 		gulp.task(_self.fullName + ':rjs', [_self.fullName + '-clean:pass2', _self.fullName + '-clean:dist'], function(callback){
 			if(_lintingFailed){
@@ -186,13 +212,25 @@ var AssemblerScripts = function(assembler){
 			}
 			_resetErrors();
 
-			// var rjsOptions = merge({}, _config.scripts);
+			var rjsOptions = merge.recursive(true, {
+				modules : _defineModules(),
+				baseUrl : _tempPass1 + '/' + _name,
+				dir : _tempPass2 + '/' + _name
+			}, _config.scripts);
 			
-			_config.scripts.modules = _defineModules();
-			_config.scripts.baseUrl = _tempPass1 + '/' + _name;
-			_config.scripts.dir = _tempPass2 + '/' + _name;
+			rjsOptions.paths = _definePaths(_config.scripts.paths);
 
-			rjs.optimize(_config.scripts, function(response){
+
+
+			// rjsOptions.wrapShim = true;
+			rjsOptions.removeCombined = true;
+			rjsOptions.skipDirOptimize = true;
+			rjsOptions.skipModuleInsertion = true;
+			rjsOptions.optimize = 'none';
+			rjsOptions.normalizeDirDefines = 'all';
+
+
+			rjs.optimize(rjsOptions, function(response){
 				runSequence(
 					_self.fullName + ':copyto-dist',
 					callback
@@ -215,6 +253,7 @@ var AssemblerScripts = function(assembler){
 				_self.fullName + ':lint',
 				_self.fullName + ':copyto-temp',
 				_self.fullName + ':es6',
+				_self.fullName + ':vendor',
 				_self.fullName + ':rjs',
 				_self.fullName + ':process',
 				callback
@@ -225,6 +264,7 @@ var AssemblerScripts = function(assembler){
 		gulp.task(_self.fullName + ':init', [], function(callback){
 
 			runSequence(
+				// _self.fullName + ':format',
 				_self.fullName + ':lint',
 				_self.fullName + '-clean:pass1',
 				_self.fullName,
@@ -273,6 +313,13 @@ var AssemblerScripts = function(assembler){
 
 	function _defineModules(){
 		var modules = glob.basename([_paths.app + '/' + _fileGlob, '!' + _paths.app + '/**/_*.*']);
+
+		// console.log(process.cwd());
+		// var modulesConfig = require(process.cwd() + '/' + _paths.app + '/_modules');
+		// console.log('defineModules');
+		// console.log(modulesConfig);
+
+		
 		
 		var moduleNames = [];
 		var rtnModules = [];
@@ -286,32 +333,73 @@ var AssemblerScripts = function(assembler){
 			moduleNames.push(getModuleName(modules[index]));
 		}
 
-		function addModule(index){
-			var module = modules[index];
-			var moduleObj = {};
-			moduleObj.name = getModuleName(module);
+		function addModule(module){
+			var moduleObj = (typeof module !== 'string')? module : {};
+			moduleObj.name = module.name || getModuleName(module);
+			moduleObj.exclude = [];
+			if (moduleObj.name !== 'vendor'){
+				moduleObj.exclude.push('vendor');
+			}
 			if (moduleObj.name !== _config[_name].primaryModule)
 			{
-				moduleObj.exclude = [];
+				
 				for (var w = 0; w < moduleNames.length; w ++){
 					if (moduleNames[w] !== moduleObj.name) {
 						moduleObj.exclude.push(moduleNames[w]);
 					}
 				}
 			}
+			else
+			{
+				moduleObj.insertRequire = [_config[_name].primaryModule];
+				// moduleObj.include = ['loader.js'];
+
+			}
+			// console.log(moduleObj);
 			rtnModules.push(moduleObj);
 		}
+
+		// addModule({
+		// 	name: 'vendor',
+
+		// });
 
 		for (i = 0; i < modules.length; i ++){
 			addModuleName(i);
 		}
 
 		for (i = 0; i < moduleNames.length; i ++){
-			addModule(i);
+			addModule(modules[i]);
 		}
+
+
+		// console.log(rtnModules);
+
 		return rtnModules;
 
 	};
+
+	function _getImports(){
+
+	}
+
+	function _definePaths(existingPaths){
+		var existingPaths = existingPaths || {};
+
+
+
+
+		var rtnPaths = merge.recursive(true, {}, existingPaths);
+
+
+
+
+		// console.log(_config.imports);
+
+		return rtnPaths;
+	}
+
+
 
 	var _self = {
 		get name(){

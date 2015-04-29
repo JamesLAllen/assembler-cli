@@ -1,5 +1,5 @@
 
-var AssemblerHtml = function(assembler){
+var AssemblerPublic = function(assembler){
 
 	var gulp = assembler.gulp;
 
@@ -14,13 +14,13 @@ var AssemblerHtml = function(assembler){
 	var _config = assembler.config;
 	var _paths = assembler.config.paths;
 	var _taskPrefix = _taskPrefix || assembler.prefix;
-	var _name = 'html';
+	var _name = 'public';
 	var _src;
-	var _fileGlob = '*.html';
+	var _fileGlob = '*.*';
 	var _error = false;
 
 	function _construct(assembler){
-		_src = [_paths.app + '/' + _fileGlob, '!' + _paths.app + '/_*.*'];
+		_src = [_paths.public + '/**/' + _fileGlob];
 		_defineTasks();
 	}
 
@@ -39,19 +39,13 @@ var AssemblerHtml = function(assembler){
 
 	function _defineTasks(){
 
-		gulp.task(_self.fullName + '-clean:dist', function(callback){
-			del([
-				_paths.dist + '/' + _paths.assets + '/**/*.{html}'
-			], callback);
-		});
-
 		gulp.task(_self.fullName, [], function(callback){
 			return gulp.src(_src)
 				.pipe(gulp.dest(_paths.dist));
 		});
 
 
-		gulp.task(_self.fullName + ':init', [_self.fullName + '-clean:dist'], function(callback){
+		gulp.task(_self.fullName + ':init', [], function(callback){
 			runSequence(
 				_self.fullName,
 				callback
@@ -60,7 +54,7 @@ var AssemblerHtml = function(assembler){
 
 		gulp.task(_self.fullName + ':watch', [_self.fullName + ':init'], function(){
 			var self = this;
-			var htmlWatch = gulp.watch(_src, function(callback){
+			var publicWatch = gulp.watch(_src, function(callback){
 				console.log(_self.fullName);
 				runSequence.apply(self, [_self.fullName, function(cb){
 					_resetErrors();
@@ -70,11 +64,10 @@ var AssemblerHtml = function(assembler){
 				}]);
 			});
 
-			htmlWatch.on('error', function(event){
-				console.log('ERROR HAPPENED');
+			publicWatch.on('error', function(event){
 				gutil.log(event);
 			});
-			htmlWatch.on('change', function(event){
+			publicWatch.on('change', function(event){
 				gutil.log(event);
 				if (event.type === 'deleted') {
 					var path = event.path;
@@ -117,4 +110,4 @@ var AssemblerHtml = function(assembler){
 	return _self;
 }
 
-module.exports = AssemblerHtml;
+module.exports = AssemblerPublic;

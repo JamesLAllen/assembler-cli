@@ -23,7 +23,7 @@ function Assembler(gulp, options){
 	var runSequence 			= require('run-sequence').use(gulp);
 	var gutil					= require('gulp-util');
 	var requireDir 				= require('directory');
-
+	// var notify 					= require('gulp-notify');
 	var _taskPrefix				= 'ab-';
 	var DEFAULT_TASK			= _taskPrefix + 'default-task';
 	var QUEUE_TASK				= _taskPrefix + 'queue-task';
@@ -62,6 +62,20 @@ function Assembler(gulp, options){
 		return _self;
 	}
 
+	function _import(fileName){
+		var formattedFile = _formatImport(fileName);
+		if (_config.imports.indexOf(formattedFile) === -1){
+			_config.imports.push(formattedFile);
+		}
+	};
+
+	function _formatImport(fileName){
+		var rtnFile = fileName;
+		rtnFile = rtnFile.replace('{bower}', process.cwd() + '/' + _config.paths.bower);
+		rtnFile = rtnFile.replace('{vendor}', process.cwd() + '/' + _config.paths.vendor);
+		return rtnFile;
+	}
+
 	function _register(taskName){
 		if (_config.verbose){
 			console.log('Register:', taskName);
@@ -76,10 +90,10 @@ function Assembler(gulp, options){
 
 		switch (library.type){
 			case 'scripts':
-				_addScriptsLibrary(library.content);
+				_addScriptsLibrary(library);
 				break;
 			case 'styles':
-				_addStylesLibrary(library.content);
+				_addStylesLibrary(library);
 				break;
 			case 'images':
 
@@ -112,7 +126,8 @@ function Assembler(gulp, options){
 	}
 
 	function _addStylesLibrary(content){
-
+		console.log('STYLES LIBRARIES ARE NOT YET SUPPORTED');
+		console.log(content);
 	}
 
 	function _getTask(module, isWatching){
@@ -317,6 +332,7 @@ function Assembler(gulp, options){
 		get prefix(){
 			return _taskPrefix;
 		},
+		import: _import,
 		queue: _queue,
 		async: _async,
 		register: _register,
