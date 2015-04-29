@@ -191,7 +191,7 @@ var AssemblerScripts = function(assembler){
 			return gulp.src(_paths.dist + '/' + _paths.assets + '/' + _fileGlob)
 			.pipe(plugins.if((_config.environment === 'production' && _config.minify), plugins.stripDebug()))
 			// .pipe(insert.prepend(require('./node_modules/loader.js/loader.js')))
-
+			
 			.pipe(insert.prepend(fs.readFileSync(_loaderFile)))
 
 			.pipe(plugins.if(_config.minify, plugins.uglify({

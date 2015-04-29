@@ -10,6 +10,8 @@
 // TODO: Create CLI, run Gulp in --silent mode
 // TODO: Create blueprints and generators
 
+process.argv.push('silent');
+
 function exists(item){
 	if (typeof item !== 'undefined'){
 		return true;

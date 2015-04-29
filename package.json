@@ -3,6 +3,7 @@
   "version": "0.0.2-beta5",
   "author": "James Allen",
   "dependencies": {
+    "commander": "^2.8.1",
     "connect-history-api-fallback": "0.0.5",
     "del": "^1.0.0",
     "directory": "^0.1.0",
@@ -41,12 +42,19 @@
     "require-dir": "^0.1.0",
     "requirejs": "^2.1.15",
     "run-sequence": "^1.0.2",
+    "shelljs": "^0.4.0",
     "stringify-object": "^1.0.0"
   },
   "description": "Framework-agnostic build environment.",
   "main": "index.js",
+  "bin": {
+    "assembler": "./bin/assembler"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
   },
   "repository": {
     "type": "git",

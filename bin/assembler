@@ -1,0 +1,91 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var shell = require('shelljs');
+var cliCommand;
+var gulpExec = 'gulp';
+var fullExec;
+var supportedVars = ['outputPath', 'minify', 'host', 'port', 'liveReload', 'environment', 'env'];
+
+function createFlagString(flags){
+	var rtnString = '';
+
+	flags.forEach(function(flag, index){
+		if (typeof program[flag] !== 'undefined'){
+			shell.echo('--' + flag + ' : ' + program[flag]);
+			rtnString = rtnString + ' --' + flag + '=' + program[flag] + ' ';
+		}
+	});
+	return rtnString;
+}
+
+function checkForGulp(){
+	if (!shell.which('gulp')){
+		shell.echo('Assembler requires Gulp to be installed globally.  npm install -g gulp');
+		shell.exit(1);
+	}
+}
+
+program
+    .version('0.0.2-beta5')
+    .usage('<keywords>')
+    .option('build', 'Compiles and packages files into outputPath')
+    .option('serve, server', 'Builds and then starts a development server that watches for file changes.')
+    .option('deploy', 'Builds, packages, and deploys files based on production environment unless --environment flag is used.')
+    .option('--outputPath [value]', 'Define the output path')
+    .option('--env, --environment [value]', 'Set the targeted environment')
+	.option('--minify [value]', 'Minify output.  Will override environment configurations.')
+	.option('--host [value]', 'Sets development server host name.')
+	.option('--port [value]', 'sets development server port number.')
+	.option('--liveReload [value]', 'Enables or disables liveReload')
+    // .option('--')
+    .parse(process.argv);
+// console.log(process.argv);
+// console.log(program.flags);
+
+
+if (process.argv.indexOf('build') !== -1){
+	cliCommand = 'build';
+}
+else if (process.argv.indexOf('serve') !== -1){
+	cliCommand = 'serve';
+}
+else if (process.argv.indexOf('deploy') !== -1){
+	cliCommand = 'deploy';
+}
+
+checkForGulp();
+
+
+switch(cliCommand){
+	case 'build':
+		fullExec = gulpExec + ' build --silent';
+		break;
+	case 'serve':
+	case 'server':
+		fullExec = gulpExec + ' server --silent';
+		break;
+	case 'deploy':
+		console.log("'deploy' command not yet available.");
+		// fullExec = gulpExec + 'deploy';
+		shell.exit(1);
+		break;
+	default:
+		program.help();
+		shell.exit(1);
+}
+
+
+fullExec = fullExec + createFlagString(supportedVars);
+
+// console.log(fullExec);
+shell.exec(fullExec, function(code, output){
+	if(code !== 0){
+		console.log('Oh noes! Something went wrong!  Time to panic!!!');
+		shell.exit(1);
+	}
+	shell.echo(output);
+});
+
+
+
