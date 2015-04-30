@@ -1,6 +1,6 @@
 {
   "name": "assembler-cli",
-  "version": "0.0.2-beta7",
+  "version": "0.0.2-beta8",
   "author": "James Allen",
   "dependencies": {
     "commander": "^2.8.1",
