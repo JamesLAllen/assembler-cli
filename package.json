@@ -2,6 +2,7 @@
   "name": "assembler-cli",
   "version": "0.0.2-beta8",
   "author": "James Allen",
+  "private": true,
   "dependencies": {
     "commander": "^2.8.1",
     "connect-history-api-fallback": "0.0.5",
