@@ -1,3 +1,5 @@
+# This is no longer in development.  I've moved on to Webpack.
+
 # assembler-cli
 Framework-agnostic build environment.
 
